@@ -1,7 +1,15 @@
-class apache2_php ($package = "libapache2-mod-php5", $module = "php5", 
-                   $mysql_deps = true, $mysql_package = "php5-mysql") {
+class apache2_php ($mysql_deps = true) {
 
     include apache2
+
+    if ($operatingsystem == "Gentoo") {
+        $package = 'dev-lang/php'
+        $mysql_package = ""
+    } else {
+        $package = "libapache2-mod-php5"
+        $mysql_package = "php5-mysql"
+        $module = "php5"
+    }
 
     if !defined("$package") {
         package { "$package":
@@ -9,7 +17,7 @@ class apache2_php ($package = "libapache2-mod-php5", $module = "php5",
         }
     }
 
-    if (!defined("$mysql_package") and $mysql_deps == true) {
+    if ($mysql_package != "" and !defined("$mysql_package") and $mysql_deps == true) {
         package { "$mysql_package":
             ensure => 'latest'
         }
